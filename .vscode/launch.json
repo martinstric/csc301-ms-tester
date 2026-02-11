@@ -1,0 +1,44 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:a1-tester}",
+            "name": "Debug a1-tester",
+            "target": "a1-tester",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug a1-tester"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:a1-tester}",
+            "name": "Release a1-tester",
+            "target": "a1-tester",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release a1-tester"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:assignment1-tester}",
+            "name": "Debug A1Tester",
+            "target": "A1Tester",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug A1Tester"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:assignment1-tester}",
+            "name": "Release A1Tester",
+            "target": "A1Tester",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release A1Tester"
+        }
+    ]
+}
