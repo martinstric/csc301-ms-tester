@@ -78,26 +78,10 @@ func runTester() async {
         exit(1)
     }
 
-    // Determine target service (default to Order service)
-    let targetServiceName = serviceType.lowercased()
-    let entityType: EntityType
-
-    switch targetServiceName {
-    case "user", "userservice":
-        entityType = .user
-    case "product", "productservice":
-        entityType = .product
-    case "order", "orderservice":
-        entityType = .order
-    default:
-        print("Error: Invalid service type '\(targetServiceName)'")
-        print("Valid options: user, product, order")
-        exit(1)
-    }
-
     // Get service configuration
-    guard var serviceConfig = config.getService(targetServiceName) else {
-        print("Error: Service '\(targetServiceName)' not found in config")
+    guard var serviceConfig = config.getService(serviceType) else {
+        print("Error: Service '\(serviceType)' not found in config")
+        print("Make sure '\(serviceType)' (or a matching key like '\(serviceType.capitalized)Service') exists in your config.json")
         exit(1)
     }
 
@@ -110,7 +94,7 @@ func runTester() async {
     }
 
     print(
-        "Target: \(entityType.rawValue.capitalized) Service (\(serviceConfig.ip):\(serviceConfig.port))"
+        "Target: \(serviceType.capitalized) Service (\(serviceConfig.ip):\(serviceConfig.port))"
     )
     print("Test cases: \(testPath)")
 
@@ -119,7 +103,7 @@ func runTester() async {
 
     // Load and run tests
     do {
-        let suite = try runner.loadTestSuite(for: entityType)
+        let suite = try runner.loadTestSuite(for: serviceType)
         let results = await runner.runAllTests(suite)
         runner.printResults(results)
 
@@ -134,23 +118,23 @@ func runTester() async {
 func printUsage() {
     print(
         """
-        Usage: a1-tester [service] [options]
+        Usage: a1-tester [options]
 
         Required Option:
-          --service, -s <name>  Service to test: user, product, or order
+          --service, -s <name>  Service to test (matches a key in config.json, e.g. "order" matches "OrderService")
 
         Options:
           --config, -c <path>   Path to config.json (default: ./config.json)
           --ip <ip>             Override service IP from config
           --port <port>         Override service port from config
-          --testpath <path>     Path to test cases directory (default: ./instructions/CSC301_A1_testcases)
+          --testpath, -t <path> Path to test cases directory (default: ./tests/testcases)
+                                Test cases are loaded from <testpath>/<service>.json
           --help, -h            Show this help message
 
         Examples:
-          a1-tester
-          a1-tester --service user
-          a1-tester --service product --ip 127.0.0.1 --port 15000
-          a1-tester --config ./custom-config.json --testpath ./tests
+          a1-tester --service order
+          a1-tester --service user --ip 127.0.0.1 --port 15000
+          a1-tester --service product --config ./custom-config.json --testpath ./tests
         """)
 }
 

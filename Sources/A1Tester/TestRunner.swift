@@ -20,17 +20,11 @@ class TestRunner {
         self.session = URLSession(configuration: config)
     }
 
-    func loadTestSuite(for entity: EntityType) throws -> TestSuite {
-        let name = entity.rawValue.capitalized
-        let payloadPath = "\(testBasePath)/payloads/\(entity.rawValue)_testcases.json"
-        let responsePath = "\(testBasePath)/responses/\(entity.rawValue)_responses.json"
+    func loadTestSuite(for serviceName: String) throws -> TestSuite {
+        let name = serviceName.capitalized
+        let suitePath = "\(testBasePath)/\(serviceName.lowercased()).json"
 
-        return try TestSuite(
-            name: name,
-            entityType: entity,
-            payloadsPath: payloadPath,
-            responsesPath: responsePath
-        )
+        return try TestSuite(name: name, path: suitePath)
     }
 
     func runAllTests(_ suite: TestSuite) async -> TestResults {
@@ -57,12 +51,12 @@ class TestRunner {
 
             // Create request
             var request = URLRequest(url: url)
-            request.httpMethod = testCase.httpMethod.rawValue
+            request.httpMethod = testCase.method.rawValue
 
-            // Add body for POST requests
-            if testCase.httpMethod == .post {
+            // Add body when present
+            if let body = testCase.body {
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.httpBody = try JSONSerialization.data(withJSONObject: testCase.payload)
+                request.httpBody = try JSONSerialization.data(withJSONObject: body)
             }
 
             // Execute request
@@ -122,7 +116,7 @@ class TestRunner {
 
     private func buildURL(for testCase: TestCase) -> URL {
         let base = "http://\(serviceConfig.ip):\(serviceConfig.port)"
-        let urlString = "\(base)\(testCase.endpoint)"
+        let urlString = "\(base)\(testCase.path)"
         return URL(string: urlString)!
     }
 
